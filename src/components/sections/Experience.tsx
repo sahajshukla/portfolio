@@ -119,8 +119,11 @@ export default function Experience() {
           className="mt-16 text-center"
         >
           <a
-            href="#resume"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 shadow-lg"
+            href="/resume.pdf"
+            download="Sahaj_Shukla_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 shadow-lg"
           >
             <svg
               className="w-5 h-5 mr-2"

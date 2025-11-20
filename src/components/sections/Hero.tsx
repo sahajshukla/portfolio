@@ -76,7 +76,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-text-primary mb-6 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-text-primary mb-6 leading-tight px-4 sm:px-0"
           >
             {contentConfig.hero.headline}
           </motion.h1>
@@ -86,7 +86,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg md:text-xl text-text-secondary mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-base sm:text-lg md:text-xl text-text-secondary mb-8 max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
           >
             {contentConfig.hero.subheadline}
           </motion.p>
@@ -109,23 +109,47 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 sm:px-0"
           >
-            {contentConfig.hero.ctas.map((cta, index) => (
-              <motion.button
-                key={cta.text}
-                onClick={() => scrollToSection(cta.href)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 ${
-                  cta.variant === 'primary'
-                    ? 'bg-accent-cyan text-background btn-glow shadow-glow-cyan'
-                    : 'glass hover:bg-white/10 text-text-primary'
-                }`}
-              >
-                {cta.text}
-              </motion.button>
-            ))}
+            {contentConfig.hero.ctas.map((cta, index) => {
+              const isExternal = cta.href.startsWith('http') || cta.href.startsWith('/');
+              const isResume = cta.href.includes('resume.pdf');
+
+              if (isResume || isExternal) {
+                return (
+                  <motion.a
+                    key={cta.text}
+                    href={cta.href}
+                    {...(isResume ? { download: 'Sahaj_Shukla_Resume.pdf', target: '_blank', rel: 'noopener noreferrer' } : { target: '_blank', rel: 'noopener noreferrer' })}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 ${
+                      cta.variant === 'primary'
+                        ? 'bg-accent-cyan text-background btn-glow shadow-glow-cyan'
+                        : 'glass hover:bg-white/10 text-text-primary'
+                    }`}
+                  >
+                    {cta.text}
+                  </motion.a>
+                );
+              }
+
+              return (
+                <motion.button
+                  key={cta.text}
+                  onClick={() => scrollToSection(cta.href)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 ${
+                    cta.variant === 'primary'
+                      ? 'bg-accent-cyan text-background btn-glow shadow-glow-cyan'
+                      : 'glass hover:bg-white/10 text-text-primary'
+                  }`}
+                >
+                  {cta.text}
+                </motion.button>
+              );
+            })}
           </motion.div>
 
           {/* Social Links */}

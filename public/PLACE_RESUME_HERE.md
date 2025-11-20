@@ -26,8 +26,16 @@ resume.pdf
 
 After adding your resume:
 1. Start the dev server: `npm run dev`
-2. Visit: `http://localhost:5000/resume.pdf`
+2. Visit: `http://localhost:8080/resume.pdf`
 3. Your resume should open/download
+
+## Where the Resume Appears:
+
+Once you add `resume.pdf`, it will be available in multiple places:
+- **Hero Section**: "View Resume" button (primary CTA)
+- **Experience Section**: "Download Full Resume" button (at the bottom)
+- **Direct Link**: `https://sahajshukla.vercel.app/resume.pdf`
+- **Download filename**: Will be saved as `Sahaj_Shukla_Resume.pdf`
 
 ---
 

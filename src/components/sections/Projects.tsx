@@ -26,7 +26,7 @@ export default function Projects() {
             transition={{ duration: 0.6 }}
             className="mb-16"
           >
-            <div className="glass rounded-2xl p-8 md:p-12 border-2 border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-300">
+            <div className="glass rounded-2xl p-6 sm:p-8 md:p-12 border-2 border-accent-cyan/30 hover:border-accent-cyan/50 transition-all duration-300">
               {/* Featured Badge */}
               <div className="flex items-center gap-2 mb-6">
                 <div className="px-3 py-1 bg-gradient-to-r from-accent-cyan to-accent-purple rounded-full">
@@ -43,17 +43,17 @@ export default function Projects() {
                 </svg>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                 {/* Left Column - Main Info */}
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-3xl md:text-4xl font-bold gradient-text mb-3">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-3">
                       {featuredProject.title}
                     </h3>
-                    <p className="text-accent-cyan text-lg font-medium mb-4">
+                    <p className="text-accent-cyan text-base sm:text-lg font-medium mb-4">
                       {featuredProject.tagline}
                     </p>
-                    <p className="text-text-secondary text-lg leading-relaxed">
+                    <p className="text-text-secondary text-base sm:text-lg leading-relaxed">
                       {featuredProject.description}
                     </p>
                   </div>
@@ -94,7 +94,7 @@ export default function Projects() {
                         href={featuredProject.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-6 py-3 bg-accent-cyan text-background font-semibold rounded-lg hover:scale-105 transition-transform"
+                        className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-accent-cyan text-background font-semibold rounded-lg hover:scale-105 transition-transform"
                       >
                         <svg
                           className="w-5 h-5 mr-2"

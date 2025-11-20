@@ -36,7 +36,7 @@ export default function About() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="glass rounded-xl p-6 sticky top-24"
+              className="glass rounded-xl p-6 lg:sticky lg:top-24"
             >
               <h3 className="text-xl font-semibold text-text-primary mb-6">
                 Quick Facts
