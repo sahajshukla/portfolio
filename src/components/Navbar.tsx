@@ -115,7 +115,7 @@ export default function Navbar() {
                 onClick={(e) => handleNavClick(e, '#contact')}
                 className="btn-glow px-6 py-2.5 bg-accent-cyan text-background font-semibold rounded-lg hover:scale-105 transition-transform duration-200"
               >
-                Let's Talk
+                Let&apos;s Talk
               </Link>
             </div>
 
@@ -188,7 +188,7 @@ export default function Navbar() {
                   onClick={(e) => handleNavClick(e, '#contact')}
                   className="block w-full btn-glow px-6 py-3 bg-accent-cyan text-background text-center font-semibold rounded-lg"
                 >
-                  Let's Talk
+                  Let&apos;s Talk
                 </Link>
               </motion.div>
             </div>
