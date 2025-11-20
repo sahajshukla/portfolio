@@ -66,8 +66,8 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-      {/* Edit Mode Toggle (for content editing) */}
-      <EditModeToggle />
+      {/* Edit Mode Toggle (for content editing - DEV ONLY) */}
+      {process.env.NODE_ENV === 'development' && <EditModeToggle />}
     </main>
   );
 }
