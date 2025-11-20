@@ -20,16 +20,23 @@ export const metadata: Metadata = {
     'Portfolio',
   ],
   authors: [{ name: contentConfig.personal.name }],
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
   openGraph: {
     title: `${contentConfig.personal.name} - Portfolio`,
     description: contentConfig.hero.subheadline,
     type: 'website',
     locale: 'en_US',
+    images: ['/icon.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${contentConfig.personal.name} - Portfolio`,
     description: contentConfig.hero.subheadline,
+    images: ['/icon.png'],
   },
 };
 
