@@ -1,12 +1,24 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import MagneticButton from '@/components/MagneticButton';
 import contentConfig from '@/config/contentConfig';
 
 export default function Hero() {
+  const ref = useRef<HTMLElement>(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const rotatingWords = contentConfig.hero.rotatingWords;
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  });
+
+  const y1 = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
+  const y2 = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const y3 = useTransform(scrollYProgress, [0, 1], ['0%', '20%']);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15,6 +27,18 @@ export default function Hero() {
 
     return () => clearInterval(interval);
   }, [rotatingWords.length]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const scrollToSection = (href: string) => {
     const targetId = href.replace('#', '');
@@ -31,14 +55,40 @@ export default function Hero() {
 
   return (
     <section
+      ref={ref}
       id="hero"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-cyan opacity-10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple opacity-10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-teal opacity-5 rounded-full blur-3xl" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Cursor-following gradient */}
+        <motion.div
+          className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20"
+          style={{
+            background: 'radial-gradient(circle, rgba(0, 217, 255, 0.3) 0%, transparent 70%)',
+          }}
+          animate={{
+            x: `${mousePosition.x}%`,
+            y: `${mousePosition.y}%`,
+          }}
+          transition={{
+            type: 'spring',
+            damping: 30,
+            stiffness: 100,
+          }}
+        />
+        <motion.div
+          style={{ y: y1 }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-cyan opacity-10 rounded-full blur-3xl animate-float"
+        />
+        <motion.div
+          style={{ y: y2 }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple opacity-10 rounded-full blur-3xl animate-float"
+        />
+        <motion.div
+          style={{ y: y3 }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-teal opacity-5 rounded-full blur-3xl"
+        />
       </div>
 
       {/* Content */}
@@ -117,37 +167,35 @@ export default function Hero() {
 
               if (isResume || isExternal) {
                 return (
-                  <motion.a
+                  <MagneticButton
                     key={cta.text}
                     href={cta.href}
                     {...(isResume ? { download: 'Sahaj_Shukla_Resume.pdf' } : { target: '_blank', rel: 'noopener noreferrer' })}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 ${
+                    strength={0.2}
+                    className={`inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 hover:scale-105 active:scale-95 ${
                       cta.variant === 'primary'
                         ? 'bg-accent-cyan text-background btn-glow shadow-glow-cyan'
                         : 'glass hover:bg-white/10 text-text-primary'
                     }`}
                   >
                     {cta.text}
-                  </motion.a>
+                  </MagneticButton>
                 );
               }
 
               return (
-                <motion.button
+                <MagneticButton
                   key={cta.text}
                   onClick={() => scrollToSection(cta.href)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 ${
+                  strength={0.2}
+                  className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 hover:scale-105 active:scale-95 ${
                     cta.variant === 'primary'
                       ? 'bg-accent-cyan text-background btn-glow shadow-glow-cyan'
                       : 'glass hover:bg-white/10 text-text-primary'
                   }`}
                 >
                   {cta.text}
-                </motion.button>
+                </MagneticButton>
               );
             })}
           </motion.div>

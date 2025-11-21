@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
 import Card from '@/components/Card';
+import TiltCard from '@/components/TiltCard';
+import MagneticButton from '@/components/MagneticButton';
 import contentConfig from '@/config/contentConfig';
 
 export default function Experience() {
@@ -36,8 +38,9 @@ export default function Experience() {
 
                 {/* Content Card */}
                 <div className={index % 2 === 0 ? 'md:col-start-2' : 'md:col-start-1'}>
-                  <Card hover={true} delay={0}>
-                    <div className="space-y-4">
+                  <TiltCard tiltIntensity={5}>
+                    <Card hover={true} delay={0}>
+                      <div className="space-y-4">
                       {/* Header */}
                       <div>
                         <div className="flex items-start justify-between mb-2">
@@ -100,7 +103,8 @@ export default function Experience() {
                         </div>
                       </div>
                     </div>
-                  </Card>
+                    </Card>
+                  </TiltCard>
                 </div>
 
                 {/* Spacer for alternating layout */}
@@ -118,9 +122,10 @@ export default function Experience() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-16 text-center"
         >
-          <a
+          <MagneticButton
             href="/resume.pdf"
             download="Sahaj_Shukla_Resume.pdf"
+            strength={0.3}
             className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 shadow-lg"
           >
             <svg
@@ -135,7 +140,7 @@ export default function Experience() {
               <path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             Download Full Resume
-          </a>
+          </MagneticButton>
         </motion.div>
       </div>
     </Section>

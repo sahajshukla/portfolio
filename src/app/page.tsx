@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
+import Impact from '@/components/sections/Impact';
 import Experience from '@/components/sections/Experience';
 import Skills from '@/components/sections/Skills';
 import Projects from '@/components/sections/Projects';
@@ -44,6 +45,9 @@ export default function Home() {
 
       {/* About Section */}
       <About />
+
+      {/* Impact Metrics Section */}
+      <Impact />
 
       {/* Experience Section */}
       <Experience />

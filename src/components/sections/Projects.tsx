@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
 import Card from '@/components/Card';
+import TiltCard from '@/components/TiltCard';
 import contentConfig from '@/config/contentConfig';
 
 export default function Projects() {
@@ -179,8 +180,9 @@ export default function Projects() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {otherProjects.map((project, index) => (
-                <Card key={project.id} delay={index * 0.1}>
-                  <div className="space-y-4">
+                <TiltCard key={project.id} tiltIntensity={8}>
+                  <Card delay={index * 0.1}>
+                    <div className="space-y-4">
                     <div>
                       <h4 className="text-xl font-bold text-text-primary mb-2">
                         {project.title}
@@ -229,8 +231,9 @@ export default function Projects() {
                         ))}
                       </div>
                     </div>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
+                </TiltCard>
               ))}
             </div>
           </>
