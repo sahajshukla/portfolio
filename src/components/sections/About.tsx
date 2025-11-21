@@ -2,6 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
+import GitHubStats from '@/components/GitHubStats';
+import GitHubCalendar from '@/components/GitHubCalendar';
 import contentConfig from '@/config/contentConfig';
 
 export default function About() {
@@ -113,6 +115,38 @@ export default function About() {
             </motion.div>
           </div>
         </div>
+
+        {/* GitHub Activity Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-16 space-y-8"
+        >
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-text-primary mb-2">
+              Open Source Contributions
+            </h3>
+            <p className="text-text-tertiary text-sm">
+              Real-time activity from{' '}
+              <a
+                href="https://github.com/sahajshukla"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent-cyan hover:underline"
+              >
+                @sahajshukla
+              </a>
+            </p>
+          </div>
+
+          <GitHubStats username="sahajshukla" />
+
+          <div className="glass rounded-xl p-6">
+            <GitHubCalendar username="sahajshukla" />
+          </div>
+        </motion.div>
       </div>
     </Section>
   );

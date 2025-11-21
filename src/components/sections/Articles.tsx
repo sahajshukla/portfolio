@@ -3,9 +3,15 @@
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
 import Card from '@/components/Card';
+import { useMediumArticles } from '@/hooks/useMediumArticles';
 import contentConfig from '@/config/contentConfig';
 
 export default function Articles() {
+  const { articles: liveArticles, loading } = useMediumArticles('sahajshukla', 6);
+
+  // Use live articles if available, otherwise fallback to static content
+  const articles = liveArticles.length > 0 ? liveArticles : contentConfig.articles;
+
   return (
     <Section id="writing" background="elevated">
       <div className="section-container">
@@ -14,8 +20,20 @@ export default function Articles() {
           subtitle="Exploring the mathematical foundations of data science, statistics, and information theory."
         />
 
+        {loading && (
+          <div className="text-center text-text-tertiary py-12">
+            Loading latest articles...
+          </div>
+        )}
+
+        {!loading && articles.length === 0 && (
+          <div className="text-center text-text-tertiary py-12">
+            No articles found. Check back soon!
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contentConfig.articles.map((article, index) => (
+          {!loading && articles.map((article, index) => (
             <motion.div
               key={article.id}
               initial={{ opacity: 0, y: 30 }}
