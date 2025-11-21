@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
-import GitHubStats from '@/components/GitHubStats';
-import GitHubCalendar from '@/components/GitHubCalendar';
+import GitHubSection from '@/components/GitHubSection';
 import contentConfig from '@/config/contentConfig';
 
 export default function About() {
@@ -141,9 +140,7 @@ export default function About() {
             </p>
           </div>
 
-          <GitHubStats username="sahajshukla" privateRepos={5} />
-
-          <GitHubCalendar username="sahajshukla" />
+          <GitHubSection username="sahajshukla" privateRepos={5} />
         </motion.div>
       </div>
     </Section>
