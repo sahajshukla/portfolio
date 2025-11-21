@@ -80,10 +80,23 @@ export default function GitHubCalendar({ username }: GitHubCalendarProps) {
     );
   }
 
-  if (error) {
+  if (error || contributions.length === 0) {
+    // If API fails, show a simple message instead of breaking the page
     return (
-      <div className="flex items-center justify-center h-32">
-        <div className="text-text-tertiary text-sm">{error}</div>
+      <div className="flex items-center justify-center h-32 glass rounded-lg p-6">
+        <div className="text-center">
+          <div className="text-text-tertiary text-sm mb-2">
+            View live contributions on GitHub
+          </div>
+          <a
+            href="https://github.com/sahajshukla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent-cyan hover:underline text-sm"
+          >
+            @sahajshukla →
+          </a>
+        </div>
       </div>
     );
   }

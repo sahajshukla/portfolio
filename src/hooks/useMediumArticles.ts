@@ -12,7 +12,7 @@ export interface MediumArticle {
   thumbnail?: string;
 }
 
-export function useMediumArticles(username: string, limit: number = 6) {
+export function useMediumArticles(username: string, limit: number = 3) {
   const [articles, setArticles] = useState<MediumArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,11 @@ export function useMediumArticles(username: string, limit: number = 6) {
           throw new Error('Invalid RSS feed');
         }
 
+        // Filter out motivational/non-technical articles
+        const excludeTitles = ['Conquering the Triund within'];
+
         const formattedArticles: MediumArticle[] = data.items
+          .filter((item: any) => !excludeTitles.some(title => item.title.includes(title)))
           .slice(0, limit)
           .map((item: any, index: number) => {
             // Extract read time from description if available

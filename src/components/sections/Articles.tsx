@@ -7,7 +7,7 @@ import { useMediumArticles } from '@/hooks/useMediumArticles';
 import contentConfig from '@/config/contentConfig';
 
 export default function Articles() {
-  const { articles: liveArticles, loading } = useMediumArticles('sahajshukla', 6);
+  const { articles: liveArticles, loading } = useMediumArticles('sahajshukla', 3);
 
   // Use live articles if available, otherwise fallback to static content
   const articles = liveArticles.length > 0 ? liveArticles : contentConfig.articles;
