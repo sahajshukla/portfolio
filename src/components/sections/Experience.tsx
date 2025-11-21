@@ -121,8 +121,6 @@ export default function Experience() {
           <a
             href="/resume.pdf"
             download="Sahaj_Shukla_Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-accent-cyan to-accent-purple text-white font-semibold rounded-lg hover:scale-105 transition-transform duration-200 shadow-lg"
           >
             <svg

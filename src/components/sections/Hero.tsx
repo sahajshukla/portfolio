@@ -120,7 +120,7 @@ export default function Hero() {
                   <motion.a
                     key={cta.text}
                     href={cta.href}
-                    {...(isResume ? { download: 'Sahaj_Shukla_Resume.pdf', target: '_blank', rel: 'noopener noreferrer' } : { target: '_blank', rel: 'noopener noreferrer' })}
+                    {...(isResume ? { download: 'Sahaj_Shukla_Resume.pdf' } : { target: '_blank', rel: 'noopener noreferrer' })}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 ${
