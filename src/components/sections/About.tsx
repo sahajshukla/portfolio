@@ -141,11 +141,9 @@ export default function About() {
             </p>
           </div>
 
-          <GitHubStats username="sahajshukla" />
+          <GitHubStats username="sahajshukla" privateRepos={5} />
 
-          <div className="glass rounded-xl p-6">
-            <GitHubCalendar username="sahajshukla" />
-          </div>
+          <GitHubCalendar username="sahajshukla" />
         </motion.div>
       </div>
     </Section>

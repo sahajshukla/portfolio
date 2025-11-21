@@ -6,16 +6,17 @@ import AnimatedCounter from './AnimatedCounter';
 
 interface GitHubStatsProps {
   username: string;
+  privateRepos?: number;
 }
 
 interface Stats {
   publicRepos: number;
+  privateRepos: number;
   followers: number;
   totalStars: number;
-  totalCommits: number;
 }
 
-export default function GitHubStats({ username }: GitHubStatsProps) {
+export default function GitHubStats({ username, privateRepos = 0 }: GitHubStatsProps) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,9 +40,9 @@ export default function GitHubStats({ username }: GitHubStatsProps) {
 
         setStats({
           publicRepos: userData.public_repos || 0,
+          privateRepos: privateRepos,
           followers: userData.followers || 0,
           totalStars,
-          totalCommits: 500, // GitHub API doesn't provide total commits easily
         });
       } catch (err) {
         console.error('Failed to fetch GitHub stats:', err);
@@ -70,12 +71,13 @@ export default function GitHubStats({ username }: GitHubStatsProps) {
 
   const statCards = [
     { label: 'Public Repos', value: stats.publicRepos, icon: '📦' },
+    { label: 'Private Repos', value: stats.privateRepos, icon: '🔒' },
     { label: 'Total Stars', value: stats.totalStars, icon: '⭐' },
     { label: 'Followers', value: stats.followers, icon: '👥' },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3 md:gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
       {statCards.map((stat, index) => (
         <motion.div
           key={stat.label}
