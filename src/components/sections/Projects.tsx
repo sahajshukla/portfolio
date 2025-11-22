@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import Section, { SectionHeader } from '@/components/Section';
 import Card from '@/components/Card';
 import TiltCard from '@/components/TiltCard';
@@ -48,9 +49,19 @@ export default function Projects() {
                 {/* Left Column - Main Info */}
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text mb-3">
-                      {featuredProject.title}
-                    </h3>
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="relative w-12 h-12 flex-shrink-0">
+                        <Image
+                          src="/Vantage_logo_purple.png"
+                          alt="Vantage AuditOS Logo"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold gradient-text">
+                        {featuredProject.title}
+                      </h3>
+                    </div>
                     <p className="text-accent-cyan text-base sm:text-lg font-medium mb-4">
                       {featuredProject.tagline}
                     </p>
