@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Section, { SectionHeader } from '@/components/Section';
-import GitHubSection from '@/components/GitHubSection';
+import GitHubStats from '@/components/GitHubStats';
 import contentConfig from '@/config/contentConfig';
 
 export default function About() {
@@ -125,10 +125,10 @@ export default function About() {
         >
           <div className="text-center">
             <h3 className="text-2xl font-bold text-text-primary mb-2">
-              Open Source Contributions
+              GitHub Stats
             </h3>
             <p className="text-text-tertiary text-sm">
-              Real-time activity from{' '}
+              View my profile at{' '}
               <a
                 href="https://github.com/sahajshukla"
                 target="_blank"
@@ -140,7 +140,7 @@ export default function About() {
             </p>
           </div>
 
-          <GitHubSection username="sahajshukla" privateRepos={5} />
+          <GitHubStats username="sahajshukla" privateRepos={5} />
         </motion.div>
       </div>
     </Section>
