@@ -4,8 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react';
 import MagneticButton from '@/components/MagneticButton';
 import contentConfig from '@/config/contentConfig';
-import NeuralNetworkBg from '@/components/backgrounds/NeuralNetworkBg';
-import DataStreamParticles from '@/components/backgrounds/DataStreamParticles';
+import InteractiveParticles from '@/components/backgrounds/InteractiveParticles';
 import TerminalTyping from '@/components/TerminalTyping';
 
 export default function Hero() {
@@ -64,42 +63,24 @@ export default function Hero() {
     >
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Grid overlay - very subtle */}
-        <div className="absolute inset-0 grid-overlay opacity-30" />
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background-surface opacity-50" />
 
-        {/* Neural network visualization */}
-        <NeuralNetworkBg activeWordIndex={currentWordIndex} />
+        {/* Interactive particle field - responds to mouse */}
+        <InteractiveParticles mousePosition={mousePosition} />
 
-        {/* Data stream particles */}
-        <DataStreamParticles isVisible={true} />
-
-        {/* Cursor-following gradient - very subtle */}
-        <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full blur-3xl opacity-10"
-          style={{
-            background: 'radial-gradient(circle, rgba(0, 217, 255, 0.25) 0%, transparent 70%)',
-          }}
-          animate={{
-            x: `${mousePosition.x}%`,
-            y: `${mousePosition.y}%`,
-          }}
-          transition={{
-            type: 'spring',
-            damping: 30,
-            stiffness: 60,
-          }}
-        />
+        {/* Ambient floating orbs - very subtle */}
         <motion.div
           style={{ y: y1 }}
-          className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent-cyan opacity-[0.04] rounded-full blur-3xl animate-float"
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-cyan opacity-[0.03] rounded-full blur-3xl"
         />
         <motion.div
           style={{ y: y2 }}
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-purple opacity-[0.04] rounded-full blur-3xl animate-float"
+          className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-accent-purple opacity-[0.03] rounded-full blur-3xl"
         />
         <motion.div
           style={{ y: y3 }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent-teal opacity-[0.03] rounded-full blur-3xl"
+          className="absolute top-1/2 right-1/3 w-48 h-48 bg-accent-teal opacity-[0.02] rounded-full blur-3xl"
         />
       </div>
 
