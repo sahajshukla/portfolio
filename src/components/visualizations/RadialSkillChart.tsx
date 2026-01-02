@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 interface SkillCategory {
@@ -25,6 +25,15 @@ const COLORS = [
 export default function RadialSkillChart({ categories }: RadialSkillChartProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [ref, inView] = useInView({ threshold: 0.3, triggerOnce: true });
+
+  // Stable hover handlers to prevent flickering
+  const handleMouseEnter = useCallback((index: number) => {
+    setActiveIndex(index);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setActiveIndex(null);
+  }, []);
 
   const chartData = useMemo(() => {
     const total = categories.reduce((sum, cat) => sum + cat.skills.length, 0);
@@ -115,38 +124,43 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
             {/* Segments */}
             {chartData.map((segment, i) => {
               const isActive = activeIndex === i;
-              const innerR = isActive ? 75 : 80;
-              const outerR = isActive ? 130 : 120;
+              const innerR = 80;
+              const outerR = 120;
 
               return (
-                <motion.g key={segment.name}>
+                <g key={segment.name}>
+                  {/* Invisible larger hit area for stable hover */}
+                  <path
+                    d={createArcPath(segment.startAngle, segment.endAngle, innerR - 10, outerR + 15)}
+                    fill="transparent"
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={() => handleMouseEnter(i)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+
                   {/* Glow effect for active segment */}
-                  {isActive && (
-                    <motion.path
-                      d={createArcPath(segment.startAngle, segment.endAngle, innerR - 5, outerR + 5)}
-                      fill={segment.color.glow}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.6 }}
-                      filter={`url(#glow-filter-${segment.index})`}
-                    />
-                  )}
+                  <motion.path
+                    d={createArcPath(segment.startAngle, segment.endAngle, innerR - 5, outerR + 8)}
+                    fill={segment.color.glow}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isActive ? 0.5 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ pointerEvents: 'none' }}
+                  />
 
                   {/* Main segment */}
                   <motion.path
                     d={createArcPath(segment.startAngle, segment.endAngle, innerR, outerR)}
-                    fill={isActive ? segment.color.main : `${segment.color.main}40`}
+                    fill={`${segment.color.main}${isActive ? '' : '40'}`}
                     stroke={segment.color.main}
                     strokeWidth={isActive ? 2 : 1}
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0 }}
                     animate={inView ? {
                       opacity: 1,
-                      scale: 1,
                       transition: { duration: 0.5, delay: i * 0.1 }
                     } : {}}
-                    whileHover={{ scale: 1.02 }}
-                    onMouseEnter={() => setActiveIndex(i)}
-                    onMouseLeave={() => setActiveIndex(null)}
-                    style={{ cursor: 'pointer', transformOrigin: '150px 150px' }}
+                    transition={{ duration: 0.2 }}
+                    style={{ pointerEvents: 'none' }}
                   />
 
                   {/* Segment icon indicator */}
@@ -154,14 +168,15 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
                     <motion.circle
                       cx={getLabelPosition(segment.midAngle, 100).x}
                       cy={getLabelPosition(segment.midAngle, 100).y}
-                      r={isActive ? 6 : 4}
+                      r={4}
                       fill={segment.color.main}
                       initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.5 + i * 0.1 }}
+                      animate={{ scale: isActive ? 1.4 : 1 }}
+                      transition={{ delay: inView ? 0.5 + i * 0.1 : 0, duration: 0.2 }}
+                      style={{ pointerEvents: 'none' }}
                     />
                   )}
-                </motion.g>
+                </g>
               );
             })}
 
@@ -263,8 +278,8 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
                   borderColor: isActive ? segment.color.main : undefined,
                   boxShadow: isActive ? `0 0 20px ${segment.color.glow}` : undefined,
                 }}
-                onMouseEnter={() => setActiveIndex(i)}
-                onMouseLeave={() => setActiveIndex(null)}
+                onMouseEnter={() => handleMouseEnter(i)}
+                onMouseLeave={handleMouseLeave}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
