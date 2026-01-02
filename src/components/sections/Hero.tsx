@@ -4,6 +4,9 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react';
 import MagneticButton from '@/components/MagneticButton';
 import contentConfig from '@/config/contentConfig';
+import NeuralNetworkBg from '@/components/backgrounds/NeuralNetworkBg';
+import DataStreamParticles from '@/components/backgrounds/DataStreamParticles';
+import TerminalTyping from '@/components/TerminalTyping';
 
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -61,11 +64,20 @@ export default function Hero() {
     >
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Cursor-following gradient */}
+        {/* Grid overlay - very subtle */}
+        <div className="absolute inset-0 grid-overlay opacity-30" />
+
+        {/* Neural network visualization */}
+        <NeuralNetworkBg activeWordIndex={currentWordIndex} />
+
+        {/* Data stream particles */}
+        <DataStreamParticles isVisible={true} />
+
+        {/* Cursor-following gradient - very subtle */}
         <motion.div
-          className="absolute w-[600px] h-[600px] rounded-full blur-3xl opacity-20"
+          className="absolute w-[500px] h-[500px] rounded-full blur-3xl opacity-10"
           style={{
-            background: 'radial-gradient(circle, rgba(0, 217, 255, 0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0, 217, 255, 0.25) 0%, transparent 70%)',
           }}
           animate={{
             x: `${mousePosition.x}%`,
@@ -74,20 +86,20 @@ export default function Hero() {
           transition={{
             type: 'spring',
             damping: 30,
-            stiffness: 100,
+            stiffness: 60,
           }}
         />
         <motion.div
           style={{ y: y1 }}
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-cyan opacity-10 rounded-full blur-3xl animate-float"
+          className="absolute top-1/4 left-1/4 w-80 h-80 bg-accent-cyan opacity-[0.04] rounded-full blur-3xl animate-float"
         />
         <motion.div
           style={{ y: y2 }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-purple opacity-10 rounded-full blur-3xl animate-float"
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-purple opacity-[0.04] rounded-full blur-3xl animate-float"
         />
         <motion.div
           style={{ y: y3 }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-teal opacity-5 rounded-full blur-3xl"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent-teal opacity-[0.03] rounded-full blur-3xl"
         />
       </div>
 
@@ -146,7 +158,7 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="inline-flex items-center px-4 py-2 rounded-full glass mb-10"
+            className="inline-flex items-center px-4 py-2 rounded-full glass mb-6"
           >
             <div className="w-2 h-2 bg-accent-teal rounded-full mr-2 animate-pulse" />
             <span className="text-sm text-text-secondary">
@@ -154,12 +166,15 @@ export default function Hero() {
             </span>
           </motion.div>
 
+          {/* Terminal typing effect */}
+          <TerminalTyping />
+
           {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 sm:px-0"
+            transition={{ duration: 0.8, delay: 1.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 sm:px-0 mt-8"
           >
             {contentConfig.hero.ctas.map((cta, index) => {
               const isExternal = cta.href.startsWith('http') || cta.href.startsWith('/');
@@ -204,8 +219,8 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="mt-12 mb-20 flex justify-center space-x-6"
+            transition={{ duration: 0.8, delay: 1.8 }}
+            className="mt-10 mb-16 flex justify-center space-x-6"
           >
             <a
               href={contentConfig.social.linkedin}
@@ -248,7 +263,7 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.5 }}
+        transition={{ duration: 1, delay: 2 }}
         className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2"
       >
         <motion.div

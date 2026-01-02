@@ -18,13 +18,11 @@ import EditModeToggle from '@/components/EditModeToggle';
 
 export default function Home() {
   useEffect(() => {
-    // Initialize Lenis smooth scroll (optional enhancement)
-    // Uncomment if you want to add Lenis for ultra-smooth scrolling
-    /*
+    // Initialize Lenis smooth scroll for ultra-smooth scrolling
     import('lenis').then(({ default: Lenis }) => {
       const lenis = new Lenis({
         duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
       });
 
@@ -34,8 +32,12 @@ export default function Home() {
       }
 
       requestAnimationFrame(raf);
+
+      // Cleanup on unmount
+      return () => {
+        lenis.destroy();
+      };
     });
-    */
   }, []);
 
   return (

@@ -8,6 +8,7 @@ interface CardProps {
   className?: string;
   hover?: boolean;
   delay?: number;
+  glowColor?: string;
 }
 
 export default function Card({
@@ -15,9 +16,9 @@ export default function Card({
   className = '',
   hover = true,
   delay = 0,
+  glowColor = 'rgba(0, 217, 255, 0.15)',
 }: CardProps) {
   const baseClasses = 'glass rounded-xl p-6';
-  const hoverClasses = hover ? 'glass-hover cursor-pointer' : '';
 
   return (
     <motion.div
@@ -29,7 +30,16 @@ export default function Card({
         delay,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className={`${baseClasses} ${hoverClasses} ${className}`}
+      whileHover={hover ? {
+        y: -4,
+        boxShadow: `0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 30px ${glowColor}`,
+        borderColor: 'rgba(0, 217, 255, 0.4)',
+        transition: { duration: 0.2 }
+      } : undefined}
+      className={`${baseClasses} ${hover ? 'cursor-pointer border border-white/10' : ''} ${className}`}
+      style={{
+        transition: 'border-color 0.3s ease',
+      }}
     >
       {children}
     </motion.div>

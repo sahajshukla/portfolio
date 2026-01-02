@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Section, { SectionHeader } from '@/components/Section';
 import Card from '@/components/Card';
 import TiltCard from '@/components/TiltCard';
+import VantageArchitecture from '@/components/visualizations/VantageArchitecture';
 import contentConfig from '@/config/contentConfig';
 
 export default function Projects() {
@@ -149,33 +150,12 @@ export default function Projects() {
                     </ul>
                   </div>
 
-                  {/* Architecture Visual Placeholder */}
-                  <div className="glass rounded-lg p-6 border border-accent-cyan/20">
+                  {/* Interactive Architecture Diagram */}
+                  <div>
                     <h5 className="text-sm font-semibold text-text-primary mb-3 uppercase tracking-wider">
-                      Architecture
+                      System Architecture
                     </h5>
-                    <div className="space-y-2 text-xs text-text-secondary">
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded bg-accent-cyan/30 mr-2" />
-                        <span>Frontend: Next.js + React</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded bg-accent-purple/30 mr-2" />
-                        <span>Backend: FastAPI Microservices</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded bg-accent-teal/30 mr-2" />
-                        <span>Database: PostgreSQL</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded bg-green-500/30 mr-2" />
-                        <span>AI: Self-hosted LLM (OpenSQL)</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-3 rounded bg-yellow-500/30 mr-2" />
-                        <span>Security: AES-256 Encryption</span>
-                      </div>
-                    </div>
+                    <VantageArchitecture />
                   </div>
                 </div>
               </div>
