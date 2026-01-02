@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useMemo, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 interface SkillCategory {
@@ -25,14 +25,28 @@ const COLORS = [
 export default function RadialSkillChart({ categories }: RadialSkillChartProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [ref, inView] = useInView({ threshold: 0.3, triggerOnce: true });
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveringRef = useRef(false);
 
-  // Stable hover handlers to prevent flickering
+  // Debounced hover handlers to prevent flickering
   const handleMouseEnter = useCallback((index: number) => {
+    isHoveringRef.current = true;
+    // Cancel any pending leave
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
     setActiveIndex(index);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    setActiveIndex(null);
+    isHoveringRef.current = false;
+    // Longer delay to prevent flicker when moving between elements
+    leaveTimeoutRef.current = setTimeout(() => {
+      if (!isHoveringRef.current) {
+        setActiveIndex(null);
+      }
+    }, 200);
   }, []);
 
   const chartData = useMemo(() => {
@@ -121,6 +135,22 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
               strokeWidth="40"
             />
 
+            {/* Center circle hit area - maintains hover when crossing center */}
+            <circle
+              cx="150"
+              cy="150"
+              r="75"
+              fill="transparent"
+              style={{ cursor: 'default' }}
+              onMouseEnter={() => {
+                // Keep current selection when crossing center
+                if (leaveTimeoutRef.current) {
+                  clearTimeout(leaveTimeoutRef.current);
+                  leaveTimeoutRef.current = null;
+                }
+              }}
+            />
+
             {/* Segments */}
             {chartData.map((segment, i) => {
               const isActive = activeIndex === i;
@@ -129,9 +159,9 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
 
               return (
                 <g key={segment.name}>
-                  {/* Invisible larger hit area for stable hover */}
+                  {/* Invisible larger hit area for stable hover - extends beyond visual segment */}
                   <path
-                    d={createArcPath(segment.startAngle, segment.endAngle, innerR - 10, outerR + 15)}
+                    d={createArcPath(segment.startAngle - 2, segment.endAngle + 2, innerR - 15, outerR + 20)}
                     fill="transparent"
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={() => handleMouseEnter(i)}
@@ -196,64 +226,65 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
                 strokeWidth="1"
               />
 
-              <AnimatePresence mode="wait">
-                {activeIndex !== null ? (
-                  <motion.g
-                    key={activeIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+              {/* Default text - fades out when active */}
+              <g style={{
+                opacity: activeIndex === null ? 1 : 0,
+                transition: 'opacity 0.3s ease-out',
+                pointerEvents: 'none'
+              }}>
+                <text
+                  x="150"
+                  y="145"
+                  textAnchor="middle"
+                  fill="#00d9ff"
+                  fontSize="12"
+                  fontWeight="600"
+                >
+                  CORE
+                </text>
+                <text
+                  x="150"
+                  y="162"
+                  textAnchor="middle"
+                  fill="#f0f0f5"
+                  fontSize="12"
+                  fontWeight="600"
+                >
+                  EXPERTISE
+                </text>
+              </g>
+
+              {/* Active text - always rendered, visibility controlled by opacity */}
+              {chartData.map((segment, i) => (
+                <g
+                  key={`center-${i}`}
+                  style={{
+                    opacity: activeIndex === i ? 1 : 0,
+                    transition: 'opacity 0.3s ease-out',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <text
+                    x="150"
+                    y="145"
+                    textAnchor="middle"
+                    fill={segment.color.main}
+                    fontSize="24"
+                    fontWeight="bold"
                   >
-                    <text
-                      x="150"
-                      y="145"
-                      textAnchor="middle"
-                      fill={chartData[activeIndex].color.main}
-                      fontSize="24"
-                      fontWeight="bold"
-                    >
-                      {chartData[activeIndex].skills.length}
-                    </text>
-                    <text
-                      x="150"
-                      y="165"
-                      textAnchor="middle"
-                      fill="#a0a0b0"
-                      fontSize="10"
-                    >
-                      skills
-                    </text>
-                  </motion.g>
-                ) : (
-                  <motion.g
-                    key="default"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    {segment.skills.length}
+                  </text>
+                  <text
+                    x="150"
+                    y="165"
+                    textAnchor="middle"
+                    fill="#a0a0b0"
+                    fontSize="10"
                   >
-                    <text
-                      x="150"
-                      y="140"
-                      textAnchor="middle"
-                      fill="#00d9ff"
-                      fontSize="11"
-                      fontWeight="600"
-                    >
-                      CORE
-                    </text>
-                    <text
-                      x="150"
-                      y="158"
-                      textAnchor="middle"
-                      fill="#f0f0f5"
-                      fontSize="11"
-                      fontWeight="600"
-                    >
-                      EXPERTISE
-                    </text>
-                  </motion.g>
-                )}
-              </AnimatePresence>
+                    skills
+                  </text>
+                </g>
+              ))}
             </motion.g>
           </svg>
         </div>
@@ -299,34 +330,27 @@ export default function RadialSkillChart({ categories }: RadialSkillChartProps) 
                   </span>
                 </div>
 
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-white/10">
-                        {segment.skills.map((skill, skillIndex) => (
-                          <motion.span
-                            key={skill}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: skillIndex * 0.03 }}
-                            className="px-2 py-1 text-xs rounded-md bg-white/5 text-text-secondary hover:text-text-primary transition-colors"
-                            style={{
-                              borderLeft: `2px solid ${segment.color.main}`,
-                            }}
-                          >
-                            {skill}
-                          </motion.span>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <div
+                  className="overflow-hidden transition-all duration-200"
+                  style={{
+                    maxHeight: isActive ? '500px' : '0',
+                    opacity: isActive ? 1 : 0,
+                  }}
+                >
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-white/10">
+                    {segment.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-2 py-1 text-xs rounded-md bg-white/5 text-text-secondary hover:text-text-primary transition-colors"
+                        style={{
+                          borderLeft: `2px solid ${segment.color.main}`,
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             );
           })}
