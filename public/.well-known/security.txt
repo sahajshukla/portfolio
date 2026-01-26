@@ -1,0 +1,10 @@
+# Security Policy for sahajshukla.vercel.app
+# https://securitytxt.org/
+
+Contact: mailto:sahajshukla@gmail.com
+Expires: 2027-01-26T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://sahajshukla.vercel.app/.well-known/security.txt
+
+# We appreciate responsible disclosure of security vulnerabilities.
+# Please allow reasonable time for us to address issues before public disclosure.
