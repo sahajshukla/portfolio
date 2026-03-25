@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="g4a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d9ff"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="g4b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="g4c" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00d9ff"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <filter id="glow4">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow4s">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="#0a0a0f" rx="64"/>
+  <polygon points="256,80 290,80 210,360 176,360" fill="url(#g4a)" opacity="0.85" filter="url(#glow4s)"/>
+  <polygon points="176,360 176,326 380,200 396,230" fill="url(#g4b)" opacity="0.85" filter="url(#glow4s)"/>
+  <polygon points="396,230 380,260 256,120 290,80" fill="url(#g4c)" opacity="0.85" filter="url(#glow4s)"/>
+  <polygon points="256,80 290,80 275,120 242,120" fill="url(#g4a)" opacity="0.85"/>
+  <polygon points="256,160 340,280 195,310" fill="#0a0a0f" opacity="0.9"/>
+  <circle cx="260" cy="245" r="6" fill="url(#g4a)" filter="url(#glow4)" opacity="0.9"/>
+  <circle cx="240" cy="200" r="3" fill="#00d9ff" opacity="0.6"/>
+  <circle cx="220" cy="280" r="3" fill="#00d9ff" opacity="0.5"/>
+  <circle cx="200" cy="345" r="4" fill="#14b8a6" opacity="0.7"/>
+  <circle cx="260" cy="345" r="3" fill="#a855f7" opacity="0.5"/>
+  <circle cx="330" cy="280" r="3" fill="#a855f7" opacity="0.5"/>
+  <circle cx="388" cy="215" r="4" fill="#a855f7" opacity="0.7"/>
+  <circle cx="350" cy="170" r="3" fill="#14b8a6" opacity="0.5"/>
+  <circle cx="310" cy="120" r="3" fill="#00d9ff" opacity="0.5"/>
+  <circle cx="270" cy="90" r="4" fill="#00d9ff" opacity="0.7"/>
+  <ellipse cx="260" cy="250" rx="185" ry="185" stroke="url(#g4a)" stroke-width="0.8" fill="none" opacity="0.12" stroke-dasharray="4 12"/>
+</svg>
