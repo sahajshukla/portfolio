@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import contentConfig from '@/config/contentConfig';
 
 const navItems = [
@@ -78,9 +79,18 @@ export default function Navbar() {
             <Link
               href="#hero"
               onClick={(e) => handleNavClick(e, '#hero')}
-              className="text-xl font-bold gradient-text hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
-              {contentConfig.personal.name}
+              <Image
+                src="/logo.svg"
+                alt="Logo"
+                width={36}
+                height={36}
+                className="w-9 h-9"
+              />
+              <span className="text-xl font-bold gradient-text">
+                {contentConfig.personal.name}
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
