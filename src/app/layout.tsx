@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: contentConfig.personal.name }],
   icons: {
-    icon: '/icon.png',
-    shortcut: '/icon.png',
-    apple: '/icon.png',
+    icon: '/favicon_icon.png',
+    shortcut: '/favicon_icon.png',
+    apple: '/favicon_icon.png',
   },
   openGraph: {
     title: `${contentConfig.personal.name} - Portfolio`,
