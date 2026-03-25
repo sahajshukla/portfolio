@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { contentConfig } from '@/config/contentConfig';
@@ -15,6 +15,7 @@ const COLORS = {
   pink: '#ec4899',
   amber: '#f59e0b',
   red: '#ef4444',
+  green: '#22c55e',
   textPrimary: '#f0f0f5',
   textSecondary: '#a0a0b0',
   textTertiary: '#707080',
@@ -35,6 +36,32 @@ function useInView(threshold = 0.15) {
     return () => obs.disconnect();
   }, [threshold]);
   return { ref, visible };
+}
+
+// ─── Animated Counter ───
+function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
+  const [count, setCount] = useState(0);
+  const { ref, visible } = useInView(0.3);
+
+  useEffect(() => {
+    if (!visible) return;
+    let start = 0;
+    const duration = 2000;
+    const step = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [visible, target]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{count}{suffix}
+    </span>
+  );
 }
 
 // ─── Floating Particles Background ───
@@ -84,12 +111,12 @@ function ProgressBar() {
     return smoothProgress.on('change', (v: number) => setProgress(v));
   }, [smoothProgress]);
 
-  const chapter = progress < 0.33 ? 'I' : progress < 0.66 ? 'II' : 'III';
-  const label = progress < 0.33 ? 'ORIGIN' : progress < 0.66 ? 'ARSENAL' : 'HORIZON';
+  const chapter = progress < 0.2 ? 'I' : progress < 0.4 ? 'II' : progress < 0.6 ? 'III' : progress < 0.8 ? 'IV' : 'V';
+  const label = progress < 0.2 ? 'ORIGIN' : progress < 0.4 ? 'ARSENAL' : progress < 0.6 ? 'CREATIONS' : progress < 0.8 ? 'HORIZON' : 'CONNECT';
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-6 py-3" style={{ background: `linear-gradient(180deg, ${COLORS.bg}ee, transparent)` }}>
-      <span className="font-mono text-xs tracking-[3px] min-w-[120px]" style={{ color: COLORS.cyan }}>
+      <span className="font-mono text-xs tracking-[3px] min-w-[140px]" style={{ color: COLORS.cyan }}>
         CH. {chapter} — {label}
       </span>
       <div className="flex-1 h-[2px] rounded-full overflow-hidden" style={{ background: `${COLORS.textTertiary}30` }}>
@@ -125,6 +152,17 @@ function ChapterTitle({ number, title, subtitle }: { number: string; title: stri
           {subtitle}
         </p>
       )}
+    </div>
+  );
+}
+
+// ─── Section Title (non-chapter) ───
+function SectionTitle({ title, subtitle }: { title: string; subtitle?: string }) {
+  const { ref, visible } = useInView(0.3);
+  return (
+    <div ref={ref} className="text-center mb-12 px-6" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
+      <h3 className="text-2xl md:text-4xl font-bold" style={{ color: COLORS.textPrimary }}>{title}</h3>
+      {subtitle && <p className="text-base mt-3 max-w-[500px] mx-auto" style={{ color: COLORS.textSecondary }}>{subtitle}</p>}
     </div>
   );
 }
@@ -176,6 +214,258 @@ function MilestoneCard({ milestone, index, isLeft }: { milestone: { year: string
   );
 }
 
+// ─── Cinematic Hero ───
+function CinematicHero() {
+  const [wordIndex, setWordIndex] = useState(0);
+  const words = contentConfig.hero.rotatingWords;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [words.length]);
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+      <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${COLORS.cyan}08, ${COLORS.purple}04, transparent)` }} />
+
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}>
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Image src="/logo.svg" alt="Logo" width={40} height={40} className="w-10 h-10" />
+          <div className="font-mono text-[13px] tracking-[6px]" style={{ color: COLORS.cyan, opacity: 0.7 }}>
+            SAHAJ SHUKLA
+          </div>
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight max-w-[800px] mx-auto mb-6" style={{ color: COLORS.textPrimary }}>
+          Building intelligent systems<br />where{' '}
+          <span style={{ background: `linear-gradient(135deg, ${COLORS.cyan}, ${COLORS.purple}, ${COLORS.teal})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>business</span>,{' '}
+          <span style={{ background: `linear-gradient(135deg, ${COLORS.purple}, ${COLORS.pink})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>data</span>, and{' '}
+          <span style={{ background: `linear-gradient(135deg, ${COLORS.teal}, ${COLORS.cyan})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AI</span>{' '}converge
+        </h1>
+
+        {/* Rotating Words */}
+        <div className="h-8 mb-6 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={wordIndex}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="font-mono text-sm tracking-[4px]"
+              style={{ color: COLORS.cyan }}
+            >
+              {words[wordIndex]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <p className="text-[15px] md:text-lg font-light leading-relaxed max-w-[560px] mx-auto mb-8" style={{ color: COLORS.textSecondary }}>
+          From audit floors at BlackRock and Nomura to architecting production AI systems — this is the story of how domain expertise meets engineering depth.
+        </p>
+
+        {/* Visa Status Badge */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: COLORS.green, boxShadow: `0 0 8px ${COLORS.green}60` }} />
+          <span className="text-xs font-mono tracking-wider" style={{ color: COLORS.textTertiary }}>{contentConfig.personal.visaStatus}</span>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex gap-4 justify-center flex-wrap mb-8">
+          {contentConfig.hero.ctas.map((cta) => (
+            <a
+              key={cta.text}
+              href={cta.href}
+              className="py-3 px-8 rounded-full font-semibold text-sm no-underline transition-all"
+              style={cta.variant === 'primary' ? {
+                background: `linear-gradient(135deg, ${COLORS.cyan}, ${COLORS.purple})`,
+                color: COLORS.bg,
+                boxShadow: `0 0 20px ${COLORS.cyan}30`,
+              } : {
+                background: 'transparent',
+                border: `1.5px solid ${COLORS.textTertiary}40`,
+                color: COLORS.textPrimary,
+              }}
+            >
+              {cta.text}
+            </a>
+          ))}
+        </div>
+
+        {/* Social Icons */}
+        <div className="flex gap-5 justify-center">
+          {[
+            { label: 'LinkedIn', url: contentConfig.social.linkedin },
+            { label: 'GitHub', url: contentConfig.social.github },
+            { label: 'Medium', url: contentConfig.social.medium },
+          ].map(link => (
+            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] tracking-[2px] no-underline transition-all hover:opacity-100" style={{ color: COLORS.textTertiary, opacity: 0.6 }}>
+              {link.label.toUpperCase()}
+            </a>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.5 }}
+        transition={{ delay: 2 }}
+        style={{ animation: 'floatParticle 3s ease-in-out infinite' }}
+      >
+        <div className="w-6 h-10 rounded-xl border-2 flex justify-center pt-2" style={{ borderColor: `${COLORS.textTertiary}40` }}>
+          <div className="w-[3px] h-2 rounded-sm" style={{ background: COLORS.cyan, animation: 'scrollDot 2s ease-in-out infinite' }} />
+        </div>
+        <div className="text-center text-[10px] mt-2 tracking-[2px] font-mono" style={{ color: COLORS.textTertiary }}>SCROLL</div>
+      </motion.div>
+    </section>
+  );
+}
+
+// ─── Companies Strip ───
+function CompaniesStrip() {
+  const { ref, visible } = useInView(0.2);
+  const companies = [
+    { name: 'BDIPlus', logo: '/companies/bdiplus_logo.jpeg', role: 'Software Engineer II' },
+    { name: 'Nomura', logo: '/companies/nomura_logo.jpeg', role: 'Associate - Finance Audit' },
+    { name: 'BlackRock', logo: '/companies/blackrock_logo.jpeg', role: 'Analyst - Technology Audit' },
+    { name: 'EliteFit AI', logo: '/companies/elitefit_ai_logo.jpeg', role: 'Backend Developer' },
+    { name: 'TCR Inc.', logo: '/companies/technical_consulting_and_research.jpeg', role: 'BI Analyst Intern' },
+  ];
+
+  return (
+    <div ref={ref} className="py-16 px-6">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-8" style={{ color: COLORS.textTertiary, opacity: visible ? 1 : 0, transition: 'opacity 1s' }}>
+        TRUSTED BY LEADING ORGANIZATIONS
+      </div>
+      <div className="flex flex-wrap justify-center items-center gap-8 max-w-[900px] mx-auto">
+        {companies.map((c, i) => (
+          <motion.div
+            key={c.name}
+            whileHover={{ scale: 1.08, borderColor: `${COLORS.cyan}40` }}
+            className="flex flex-col items-center gap-2 p-4 rounded-xl cursor-default"
+            style={{
+              background: `${COLORS.surface}80`,
+              border: `1px solid ${COLORS.textTertiary}15`,
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: `all 0.6s ease-out ${i * 0.1}s`,
+            }}
+          >
+            <Image src={c.logo} alt={c.name} width={48} height={48} className="rounded-lg grayscale hover:grayscale-0 transition-all" />
+            <span className="text-xs font-semibold" style={{ color: COLORS.textPrimary }}>{c.name}</span>
+            <span className="text-[10px]" style={{ color: COLORS.textTertiary }}>{c.role}</span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── About Section ───
+function AboutSection() {
+  const { ref: ref1, visible: v1 } = useInView();
+  const { ref: ref2, visible: v2 } = useInView();
+
+  const education = [
+    { degree: 'MS Business Intelligence & Analytics', school: 'Stevens Institute of Technology' },
+    { degree: 'BE Electronics & Telecommunication', school: 'University of Mumbai' },
+  ];
+
+  const interests = ['Probability Theory', 'Information Theory', 'Statistics', 'Creative Writing', 'Music', 'Mechanical Watches'];
+
+  return (
+    <div className="max-w-[900px] mx-auto px-6 pb-20">
+      {/* About Paragraphs */}
+      <div ref={ref1} className="mb-12" style={{ opacity: v1 ? 1 : 0, transform: v1 ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 space-y-4">
+            {contentConfig.about.paragraphs.map((p, i) => (
+              <p key={i} className="text-sm leading-relaxed" style={{ color: COLORS.textSecondary }}>{p}</p>
+            ))}
+          </div>
+          <div className="space-y-6">
+            {/* Quick Facts */}
+            <div className="rounded-xl p-5" style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}15` }}>
+              <div className="font-mono text-[11px] tracking-[3px] mb-3" style={{ color: COLORS.cyan }}>QUICK FACTS</div>
+              <ul className="space-y-2">
+                {contentConfig.about.highlights.map((h, i) => (
+                  <li key={i} className="text-xs leading-relaxed flex gap-2" style={{ color: COLORS.textSecondary }}>
+                    <span style={{ color: COLORS.cyan }}>&#x25B8;</span>
+                    {h}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Education */}
+            <div className="rounded-xl p-5" style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}15` }}>
+              <div className="font-mono text-[11px] tracking-[3px] mb-3" style={{ color: COLORS.purple }}>EDUCATION</div>
+              {education.map((e, i) => (
+                <div key={i} className={i > 0 ? 'mt-3 pt-3' : ''} style={i > 0 ? { borderTop: `1px solid ${COLORS.textTertiary}15` } : {}}>
+                  <div className="text-xs font-semibold" style={{ color: COLORS.textPrimary }}>{e.degree}</div>
+                  <div className="text-[11px]" style={{ color: COLORS.textTertiary }}>{e.school}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interests */}
+      <div ref={ref2} className="flex flex-wrap justify-center gap-2" style={{ opacity: v2 ? 1 : 0, transition: 'opacity 0.8s ease-out' }}>
+        {interests.map(tag => (
+          <span key={tag} className="px-3 py-1.5 rounded-full text-[11px] font-mono" style={{ background: `${COLORS.textTertiary}12`, color: COLORS.textTertiary, border: `1px solid ${COLORS.textTertiary}15` }}>
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Impact Metrics ───
+function ImpactMetrics() {
+  const { ref, visible } = useInView(0.2);
+  const metrics = [
+    { value: 466, prefix: '$', suffix: 'B+', label: 'Financial Activity Analyzed', desc: 'Fraud detection across journal entries', color: COLORS.cyan },
+    { value: 200, suffix: '+', label: 'Concurrent Audits Tracked', desc: 'Real-time monitoring dashboard', color: COLORS.purple },
+    { value: 65, suffix: '+', label: 'IT Controls Tested', desc: 'SOX/ITGC across 9 engagements', color: COLORS.teal },
+    { value: 40, suffix: '%', label: 'Latency Reduction', desc: 'Redis caching optimization', color: COLORS.pink },
+    { value: 63, suffix: '%', label: 'Extraction Success Rate', desc: 'Spark + Azure OpenAI pipeline', color: COLORS.amber },
+    { value: 35, suffix: '%', label: 'Manual Effort Reduced', desc: 'Python automation workflows', color: COLORS.green },
+  ];
+
+  return (
+    <div ref={ref} className="max-w-[1000px] mx-auto px-6 py-16">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-10" style={{ color: COLORS.textTertiary }}>IMPACT BY THE NUMBERS</div>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+        {metrics.map((m, i) => (
+          <div
+            key={i}
+            className="text-center p-5 rounded-xl"
+            style={{
+              background: `${COLORS.surface}80`,
+              border: `1px solid ${m.color}15`,
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: `all 0.6s ease-out ${i * 0.1}s`,
+            }}
+          >
+            <div className="text-2xl md:text-3xl font-extrabold font-mono" style={{ color: m.color }}>
+              {visible ? <AnimatedCounter target={m.value} prefix={m.prefix || ''} suffix={m.suffix} /> : `${m.prefix || ''}0${m.suffix}`}
+            </div>
+            <div className="text-xs font-semibold mt-1 tracking-wider uppercase" style={{ color: COLORS.textPrimary }}>{m.label}</div>
+            <div className="text-[11px] mt-1" style={{ color: COLORS.textTertiary }}>{m.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── CHAPTER I: ORIGIN ───
 function ChapterOrigin() {
   const { ref: ref1, visible: v1 } = useInView();
@@ -203,10 +493,16 @@ function ChapterOrigin() {
         </p>
       </div>
 
+      {/* About & Companies */}
+      <AboutSection />
+      <CompaniesStrip />
+
+      {/* Career Timeline */}
       <div className="max-w-[800px] mx-auto px-6 pb-20 relative">
+        <div className="text-center font-mono text-[11px] tracking-[4px] mb-10" style={{ color: COLORS.textTertiary }}>THE JOURNEY</div>
         <div
           ref={ref2}
-          className="absolute top-0 bottom-0"
+          className="absolute top-10 bottom-0"
           style={{
             left: '50%',
             width: 2,
@@ -220,6 +516,12 @@ function ChapterOrigin() {
         ))}
       </div>
 
+      {/* Detailed Experience */}
+      <DetailedExperience />
+
+      {/* Impact Metrics */}
+      <ImpactMetrics />
+
       <div ref={ref3} className="text-center px-6 pb-28" style={{ opacity: v3 ? 1 : 0, transform: v3 ? 'scale(1)' : 'scale(0.95)', transition: 'all 1.2s ease-out' }}>
         <blockquote className="text-xl md:text-3xl italic font-light leading-relaxed max-w-[600px] mx-auto" style={{ color: COLORS.textSecondary }}>
           &ldquo;The journey from auditor to architect taught me that the best systems aren&apos;t just built — they&apos;re{' '}
@@ -229,6 +531,77 @@ function ChapterOrigin() {
         </blockquote>
       </div>
     </section>
+  );
+}
+
+// ─── Detailed Experience ───
+function DetailedExperience() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  return (
+    <div className="max-w-[900px] mx-auto px-6 pb-16">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-8" style={{ color: COLORS.textTertiary }}>DETAILED EXPERIENCE</div>
+      <div className="space-y-4">
+        {contentConfig.experience.map((exp, i) => {
+          const isOpen = expanded === exp.id;
+          const accentColor = [COLORS.pink, COLORS.purple, COLORS.cyan, COLORS.teal, COLORS.amber][i % 5];
+          return (
+            <motion.div
+              key={exp.id}
+              className="rounded-xl overflow-hidden cursor-pointer"
+              style={{ background: `${COLORS.surface}cc`, border: `1px solid ${isOpen ? accentColor : COLORS.textTertiary}${isOpen ? '40' : '15'}`, transition: 'border-color 0.3s' }}
+              onClick={() => setExpanded(isOpen ? null : exp.id)}
+            >
+              <div className="flex items-center justify-between p-5">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-base font-bold" style={{ color: COLORS.textPrimary }}>{exp.title}</span>
+                    <span className="text-sm font-medium" style={{ color: accentColor }}>{exp.company}</span>
+                  </div>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs font-mono" style={{ color: COLORS.textTertiary }}>{exp.period}</span>
+                    <span className="text-xs" style={{ color: COLORS.textTertiary }}>· {exp.location}</span>
+                  </div>
+                </div>
+                <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }} style={{ color: COLORS.textTertiary }}>
+                  &#x25BC;
+                </motion.div>
+              </div>
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-5 pt-0">
+                      <p className="text-sm italic mb-4" style={{ color: COLORS.textSecondary }}>{exp.description}</p>
+                      <ul className="space-y-2 mb-4">
+                        {exp.achievements.map((a, j) => (
+                          <li key={j} className="text-sm flex gap-2" style={{ color: COLORS.textSecondary }}>
+                            <span style={{ color: accentColor }}>&#x25B8;</span>
+                            {a}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex flex-wrap gap-1.5">
+                        {exp.technologies.map(t => (
+                          <span key={t} className="px-2.5 py-1 rounded-md font-mono text-[10px]" style={{ background: `${accentColor}15`, color: accentColor, border: `1px solid ${accentColor}25` }}>
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -322,6 +695,46 @@ function StatsBar() {
   );
 }
 
+// ─── Certifications ───
+function Certifications() {
+  const { ref, visible } = useInView(0.3);
+  const certs = [
+    { name: 'Databricks Fundamentals Accreditation', issuer: 'Databricks Academy', date: 'Nov 2025', url: '/certifications/databricks-fundamentals.pdf' },
+    { name: 'Get Started with Databricks for Data Engineering', issuer: 'Databricks Academy', date: 'Nov 2025', url: '/certifications/databricks-data-engineering.pdf' },
+  ];
+
+  return (
+    <div ref={ref} className="max-w-[700px] mx-auto px-6 pt-10 pb-4">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-6" style={{ color: COLORS.textTertiary }}>CERTIFICATIONS</div>
+      <div className="flex flex-wrap justify-center gap-3">
+        {certs.map((c, i) => (
+          <a
+            key={i}
+            href={c.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl no-underline transition-all"
+            style={{
+              background: `${COLORS.surface}cc`,
+              border: `1px solid ${COLORS.amber}25`,
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(15px)',
+              transition: `all 0.5s ease-out ${i * 0.1}s`,
+            }}
+          >
+            <span style={{ color: COLORS.amber }}>&#x2713;</span>
+            <div>
+              <div className="text-xs font-semibold" style={{ color: COLORS.textPrimary }}>{c.name}</div>
+              <div className="text-[10px]" style={{ color: COLORS.textTertiary }}>{c.issuer} · {c.date}</div>
+            </div>
+            <span className="text-[10px] ml-1" style={{ color: COLORS.textTertiary }}>&#x2197;</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── CHAPTER II: ARSENAL ───
 function ChapterArsenal() {
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -357,6 +770,7 @@ function ChapterArsenal() {
           </AnimatePresence>
         </div>
         <StatsBar />
+        <Certifications />
       </div>
     </section>
   );
@@ -372,16 +786,25 @@ function VantageShowcase() {
     { icon: '\u{1F4CA}', title: 'Live Collab', desc: 'Real-time collaboration with full audit trails' },
   ];
 
+  const vantage = contentConfig.projects.find(p => p.id === 'vantage');
+
   return (
-    <div ref={ref} className="max-w-[800px] mx-auto px-6" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(40px)', transition: 'all 1s ease-out' }}>
+    <div ref={ref} className="max-w-[800px] mx-auto px-6 mb-16" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(40px)', transition: 'all 1s ease-out' }}>
       <div className="rounded-3xl p-8 md:p-12 relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${COLORS.surface}, ${COLORS.bg})`, border: `1px solid ${COLORS.purple}30` }}>
         <div className="absolute -top-[50px] -right-[50px] w-[200px] h-[200px] rounded-full" style={{ background: `radial-gradient(circle, ${COLORS.purple}15, transparent)` }} />
         <div className="font-mono text-[11px] tracking-[3px] mb-3" style={{ color: COLORS.purple }}>FLAGSHIP PROJECT</div>
         <h3 className="text-2xl md:text-4xl font-extrabold mb-2" style={{ color: COLORS.textPrimary }}>Vantage AuditOS</h3>
-        <p className="text-base leading-relaxed mb-8 max-w-[600px]" style={{ color: COLORS.textSecondary }}>
+        <p className="text-base leading-relaxed mb-4 max-w-[600px]" style={{ color: COLORS.textSecondary }}>
           AI-powered, zero-trust audit automation. Built end-to-end — from architecture to deployment — using FastAPI, Next.js, PostgreSQL, and a self-hosted LLM.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {vantage?.fullDescription && (
+          <div className="space-y-2 mb-6">
+            {vantage.fullDescription.map((p, i) => (
+              <p key={i} className="text-sm leading-relaxed" style={{ color: COLORS.textTertiary }}>{p}</p>
+            ))}
+          </div>
+        )}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           {features.map((f, i) => (
             <motion.div key={i} whileHover={{ background: `${COLORS.purple}15`, borderColor: `${COLORS.purple}50` }} className="p-4 rounded-xl cursor-default" style={{ background: `${COLORS.bg}80`, border: `1px solid ${COLORS.textTertiary}15`, transition: 'all 0.3s' }}>
               <div className="text-[22px] mb-2">{f.icon}</div>
@@ -390,39 +813,155 @@ function VantageShowcase() {
             </motion.div>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2 mt-6">
-          {['FastAPI', 'Next.js', 'PostgreSQL', 'OpenSQL-7B', 'Docker', 'AES-256', 'Terraform'].map(t => (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(vantage?.technologies || ['FastAPI', 'Next.js', 'PostgreSQL', 'OpenSQL-7B', 'Docker', 'AES-256', 'Terraform']).map(t => (
             <span key={t} className="px-3 py-1 rounded-md font-mono text-[11px]" style={{ background: `${COLORS.textTertiary}15`, color: COLORS.textTertiary }}>{t}</span>
           ))}
         </div>
+        {vantage?.githubUrl && (
+          <a href={vantage.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-block py-2.5 px-6 rounded-full text-sm font-semibold no-underline" style={{ background: `${COLORS.purple}20`, color: COLORS.purple, border: `1px solid ${COLORS.purple}40` }}>
+            Visit Platform &#x2197;
+          </a>
+        )}
       </div>
     </div>
   );
 }
 
-// ─── CHAPTER III: HORIZON ───
+// ─── Other Projects Grid ───
+function OtherProjects() {
+  const otherProjects = contentConfig.projects.filter(p => !p.featured);
+
+  return (
+    <div className="max-w-[900px] mx-auto px-6 pb-16">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-8" style={{ color: COLORS.textTertiary }}>MORE PROJECTS</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {otherProjects.map((project, i) => {
+          const accentColor = [COLORS.cyan, COLORS.teal, COLORS.pink, COLORS.amber, COLORS.purple, COLORS.green][i % 6];
+          return (
+            <ProjectCard key={project.id} project={project} accentColor={accentColor} index={i} />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({ project, accentColor, index }: { project: typeof contentConfig.projects[0]; accentColor: string; index: number }) {
+  const { ref, visible } = useInView(0.1);
+  return (
+    <motion.div
+      ref={ref}
+      whileHover={{ borderColor: `${accentColor}50`, y: -3 }}
+      className="rounded-xl p-5"
+      style={{
+        background: `${COLORS.surface}cc`,
+        border: `1px solid ${COLORS.textTertiary}15`,
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `all 0.5s ease-out ${index * 0.08}s`,
+      }}
+    >
+      <div className="text-base font-bold mb-1" style={{ color: COLORS.textPrimary }}>{project.title}</div>
+      <div className="text-xs font-medium mb-2" style={{ color: accentColor }}>{project.tagline}</div>
+      <p className="text-sm leading-relaxed mb-3" style={{ color: COLORS.textSecondary }}>{project.description}</p>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {project.technologies.map(t => (
+          <span key={t} className="px-2 py-0.5 rounded text-[10px] font-mono" style={{ background: `${accentColor}12`, color: accentColor }}>{t}</span>
+        ))}
+      </div>
+      {project.githubUrl && (
+        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-mono no-underline" style={{ color: accentColor }}>
+          View Project &#x2197;
+        </a>
+      )}
+    </motion.div>
+  );
+}
+
+// ─── Articles Section ───
+function ArticlesSection() {
+  const { ref, visible } = useInView(0.2);
+
+  return (
+    <div ref={ref} className="max-w-[900px] mx-auto px-6 pb-16">
+      <div className="text-center font-mono text-[11px] tracking-[4px] mb-8" style={{ color: COLORS.textTertiary }}>WRITING</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {contentConfig.articles.map((article, i) => (
+          <a
+            key={article.id}
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl p-5 no-underline block transition-all"
+            style={{
+              background: `${COLORS.surface}cc`,
+              border: `1px solid ${COLORS.textTertiary}15`,
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(20px)',
+              transition: `all 0.5s ease-out ${i * 0.1}s`,
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ background: `${COLORS.teal}15`, color: COLORS.teal }}>
+                {article.readTime}
+              </span>
+              <span className="text-[10px]" style={{ color: COLORS.textTertiary }}>{article.publishedDate}</span>
+            </div>
+            <div className="text-sm font-bold mb-2 leading-snug" style={{ color: COLORS.textPrimary }}>{article.title}</div>
+            <p className="text-xs leading-relaxed mb-3" style={{ color: COLORS.textTertiary }}>{article.description}</p>
+            <span className="text-xs font-mono" style={{ color: COLORS.teal }}>Read on Medium &#x2197;</span>
+          </a>
+        ))}
+      </div>
+      <div className="text-center mt-6">
+        <a href={contentConfig.social.medium} target="_blank" rel="noopener noreferrer" className="text-xs font-mono no-underline" style={{ color: COLORS.textTertiary }}>
+          View All Articles &#x2197;
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── CHAPTER III: CREATIONS ───
+function ChapterCreations() {
+  return (
+    <section className="min-h-screen relative pb-20">
+      <ChapterTitle number="III" title="Creations" subtitle="From concept to production — built to last." />
+      <VantageShowcase />
+      <OtherProjects />
+      <ArticlesSection />
+    </section>
+  );
+}
+
+// ─── CHAPTER IV: HORIZON ───
 function ChapterHorizon() {
   const { ref: ref1, visible: v1 } = useInView();
   const { ref: ref2, visible: v2 } = useInView();
-  const { ref: ref3, visible: v3 } = useInView();
 
-  const roles = ['Senior Data Analyst', 'BI Manager', 'Audit Data Engineer', 'Data Engineering Lead', 'Technical PM', 'Senior IT Auditor'];
+  const roles = contentConfig.openToRoles.roles;
 
   return (
-    <section className="min-h-screen relative pb-28">
-      <ChapterTitle number="III" title="Horizon" subtitle="Where expertise meets ambition." />
+    <section className="relative pb-20">
+      <ChapterTitle number="IV" title="Horizon" subtitle="Where expertise meets ambition." />
 
-      <div ref={ref1} className="max-w-[700px] mx-auto mb-20 px-6 text-center" style={{ opacity: v1 ? 1 : 0, transform: v1 ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
+      {/* Actively Seeking Badge */}
+      <div className="flex justify-center mb-8">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: `${COLORS.green}15`, border: `1px solid ${COLORS.green}30` }}>
+          <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: COLORS.green, boxShadow: `0 0 8px ${COLORS.green}60` }} />
+          <span className="text-xs font-semibold" style={{ color: COLORS.green }}>Actively Seeking Opportunities</span>
+        </div>
+      </div>
+
+      <div ref={ref1} className="max-w-[700px] mx-auto mb-12 px-6 text-center" style={{ opacity: v1 ? 1 : 0, transform: v1 ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
         <p className="text-lg md:text-xl font-light leading-relaxed" style={{ color: COLORS.textPrimary }}>
-          I&apos;m seeking senior technical roles where{' '}
-          <span className="font-semibold" style={{ color: COLORS.cyan }}>business intelligence</span>,{' '}
-          <span className="font-semibold" style={{ color: COLORS.purple }}>domain expertise</span>, and{' '}
-          <span className="font-semibold" style={{ color: COLORS.teal }}>engineering depth</span>{' '}
-          converge to drive strategic impact.
+          {contentConfig.openToRoles.description}
         </p>
       </div>
 
-      <div ref={ref2} className="flex flex-wrap justify-center gap-3.5 max-w-[800px] mx-auto mb-20 px-6">
+      {/* Target Roles */}
+      <div className="flex flex-wrap justify-center gap-3.5 max-w-[800px] mx-auto mb-12 px-6">
         {roles.map((role, i) => (
           <motion.div
             key={role}
@@ -432,9 +971,6 @@ function ChapterHorizon() {
               background: `${COLORS.surface}cc`,
               border: `1px solid ${[COLORS.cyan, COLORS.purple, COLORS.teal][i % 3]}30`,
               color: COLORS.textPrimary,
-              opacity: v2 ? 1 : 0,
-              transform: v2 ? 'translateY(0)' : 'translateY(20px)',
-              transition: `all 0.5s ease-out ${i * 0.08}s`,
             }}
           >
             {role}
@@ -442,67 +978,196 @@ function ChapterHorizon() {
         ))}
       </div>
 
-      <VantageShowcase />
+      {/* Value Props */}
+      <div ref={ref2} className="max-w-[700px] mx-auto mb-16 px-6" style={{ opacity: v2 ? 1 : 0, transform: v2 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s ease-out' }}>
+        <div className="text-center font-mono text-[11px] tracking-[4px] mb-6" style={{ color: COLORS.textTertiary }}>WHAT I BRING</div>
+        <div className="space-y-3">
+          {contentConfig.openToRoles.valueProps.map((prop, i) => (
+            <div key={i} className="flex gap-3 text-sm leading-relaxed" style={{ color: COLORS.textSecondary }}>
+              <span className="mt-0.5" style={{ color: [COLORS.cyan, COLORS.purple, COLORS.teal, COLORS.pink][i % 4] }}>&#x25C6;</span>
+              {prop}
+            </div>
+          ))}
+        </div>
+      </div>
 
-      <div ref={ref3} className="text-center pt-20 pb-10 px-6" style={{ opacity: v3 ? 1 : 0, transform: v3 ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
-        <h3 className="text-2xl md:text-4xl font-bold mb-6" style={{ color: COLORS.textPrimary }}>
-          Let&apos;s build something{' '}
-          <span style={{ background: `linear-gradient(90deg, ${COLORS.cyan}, ${COLORS.purple})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            extraordinary
-          </span>
-        </h3>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <a href={`mailto:${contentConfig.personal.email}`} className="py-3.5 px-9 rounded-full font-bold text-[15px] no-underline transition-all" style={{ background: `linear-gradient(135deg, ${COLORS.cyan}, ${COLORS.purple})`, color: COLORS.bg, boxShadow: `0 0 24px ${COLORS.cyan}40` }}>
-            Get In Touch
-          </a>
-          <a href="/resume.pdf" className="py-3.5 px-9 rounded-full font-semibold text-[15px] no-underline transition-all" style={{ background: 'transparent', border: `1.5px solid ${COLORS.textTertiary}40`, color: COLORS.textPrimary }}>
-            View Resume
-          </a>
+      {/* Visa Info */}
+      <div className="max-w-[500px] mx-auto mb-16 px-6">
+        <div className="rounded-xl p-4 text-center" style={{ background: `${COLORS.surface}80`, border: `1px solid ${COLORS.textTertiary}15` }}>
+          <span className="text-xs" style={{ color: COLORS.textTertiary }}>{contentConfig.personal.visaStatus}</span>
         </div>
       </div>
     </section>
   );
 }
 
-// ─── Cinematic Hero ───
-function CinematicHero() {
-  return (
-    <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
-      <div className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full pointer-events-none" style={{ background: `radial-gradient(circle, ${COLORS.cyan}08, ${COLORS.purple}04, transparent)` }} />
+// ─── CHAPTER V: CONNECT (Contact) ───
+function ChapterConnect() {
+  const { ref, visible } = useInView(0.2);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
 
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}>
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <Image src="/logo.svg" alt="Logo" width={40} height={40} className="w-10 h-10" />
-          <div className="font-mono text-[13px] tracking-[6px]" style={{ color: COLORS.cyan, opacity: 0.7 }}>
-            SAHAJ SHUKLA
+  const handleSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name}`);
+    const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`);
+    window.open(`mailto:${contentConfig.personal.email}?subject=${subject}&body=${body}`, '_self');
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
+  }, [formData]);
+
+  return (
+    <section className="relative pb-10">
+      <ChapterTitle number="V" title="Connect" subtitle="Let's build something extraordinary together." />
+
+      <div ref={ref} className="max-w-[900px] mx-auto px-6" style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(30px)', transition: 'all 1s ease-out' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Contact Form */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono tracking-wider mb-1.5" style={{ color: COLORS.textTertiary }}>
+                  {contentConfig.contact.formFields.name.label.toUpperCase()}
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder={contentConfig.contact.formFields.name.placeholder}
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all focus:ring-1"
+                  style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}20`, color: COLORS.textPrimary }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono tracking-wider mb-1.5" style={{ color: COLORS.textTertiary }}>
+                  {contentConfig.contact.formFields.email.label.toUpperCase()}
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder={contentConfig.contact.formFields.email.placeholder}
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all focus:ring-1"
+                  style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}20`, color: COLORS.textPrimary }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-mono tracking-wider mb-1.5" style={{ color: COLORS.textTertiary }}>
+                  {contentConfig.contact.formFields.message.label.toUpperCase()}
+                </label>
+                <textarea
+                  required
+                  rows={5}
+                  placeholder={contentConfig.contact.formFields.message.placeholder}
+                  value={formData.message}
+                  onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all focus:ring-1 resize-none"
+                  style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}20`, color: COLORS.textPrimary }}
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl font-bold text-sm transition-all"
+                style={{
+                  background: submitted ? COLORS.green : `linear-gradient(135deg, ${COLORS.cyan}, ${COLORS.purple})`,
+                  color: submitted ? COLORS.bg : COLORS.bg,
+                  boxShadow: `0 0 20px ${submitted ? COLORS.green : COLORS.cyan}30`,
+                }}
+              >
+                {submitted ? '✓ Opening Email Client...' : 'Send Message'}
+              </button>
+            </form>
+          </div>
+
+          {/* Contact Sidebar */}
+          <div className="space-y-4">
+            <div className="rounded-xl p-5" style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}15` }}>
+              <div className="font-mono text-[10px] tracking-[3px] mb-3" style={{ color: COLORS.cyan }}>DIRECT CONTACT</div>
+              <a href={`mailto:${contentConfig.personal.email}`} className="block text-sm mb-2 no-underline" style={{ color: COLORS.textPrimary }}>{contentConfig.personal.email}</a>
+              <a href={`tel:${contentConfig.personal.phone}`} className="block text-sm mb-2 no-underline" style={{ color: COLORS.textPrimary }}>{contentConfig.personal.phone}</a>
+              <div className="text-sm" style={{ color: COLORS.textTertiary }}>{contentConfig.personal.location}</div>
+            </div>
+
+            <div className="rounded-xl p-5" style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}15` }}>
+              <div className="font-mono text-[10px] tracking-[3px] mb-3" style={{ color: COLORS.purple }}>CONNECT ONLINE</div>
+              {[
+                { label: 'LinkedIn', url: contentConfig.social.linkedin },
+                { label: 'GitHub', url: contentConfig.social.github },
+                { label: 'Medium', url: contentConfig.social.medium },
+              ].map(link => (
+                <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="block text-sm mb-1.5 no-underline transition-all" style={{ color: COLORS.textSecondary }}>
+                  {link.label} &#x2197;
+                </a>
+              ))}
+            </div>
+
+            <div className="rounded-xl p-5" style={{ background: `${COLORS.surface}cc`, border: `1px solid ${COLORS.textTertiary}15` }}>
+              <div className="text-xs" style={{ color: COLORS.textTertiary }}>I typically respond within <span style={{ color: COLORS.green }}>24 hours</span>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Enhanced Footer ───
+function EnhancedFooter() {
+  return (
+    <footer className="pt-16 pb-8 px-6 relative" style={{ borderTop: `1px solid ${COLORS.textTertiary}10` }}>
+      <div className="max-w-[900px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Image src="/logo.svg" alt="Logo" width={24} height={24} />
+              <span className="font-bold text-sm" style={{ color: COLORS.textPrimary }}>{contentConfig.personal.name}</span>
+            </div>
+            <p className="text-xs leading-relaxed mb-2" style={{ color: COLORS.textTertiary }}>{contentConfig.personal.tagline}</p>
+            <p className="text-xs" style={{ color: COLORS.textTertiary }}>{contentConfig.personal.location}</p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <div className="font-mono text-[10px] tracking-[3px] mb-3" style={{ color: COLORS.textTertiary }}>QUICK LINKS</div>
+            {['About', 'Experience', 'Skills', 'Projects', 'Writing', 'Contact'].map(link => (
+              <a key={link} href={`#${link.toLowerCase()}`} className="block text-xs mb-1.5 no-underline" style={{ color: COLORS.textSecondary }}>
+                {link}
+              </a>
+            ))}
+          </div>
+
+          {/* Connect */}
+          <div>
+            <div className="font-mono text-[10px] tracking-[3px] mb-3" style={{ color: COLORS.textTertiary }}>CONNECT</div>
+            {[
+              { label: 'LinkedIn', url: contentConfig.social.linkedin },
+              { label: 'GitHub', url: contentConfig.social.github },
+              { label: 'Medium', url: contentConfig.social.medium },
+              { label: 'Kaggle', url: contentConfig.social.kaggle },
+            ].map(link => (
+              <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="block text-xs mb-1.5 no-underline" style={{ color: COLORS.textSecondary }}>
+                {link.label} &#x2197;
+              </a>
+            ))}
+            <a href={`mailto:${contentConfig.personal.email}`} className="block text-xs mb-1.5 no-underline mt-2" style={{ color: COLORS.textSecondary }}>{contentConfig.personal.email}</a>
+            <a href={`tel:${contentConfig.personal.phone}`} className="block text-xs no-underline" style={{ color: COLORS.textSecondary }}>{contentConfig.personal.phone}</a>
           </div>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight max-w-[800px] mx-auto mb-6" style={{ color: COLORS.textPrimary }}>
-          Building intelligent systems<br />where{' '}
-          <span style={{ background: `linear-gradient(135deg, ${COLORS.cyan}, ${COLORS.purple}, ${COLORS.teal})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>business</span>,{' '}
-          <span style={{ background: `linear-gradient(135deg, ${COLORS.purple}, ${COLORS.pink})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>data</span>, and{' '}
-          <span style={{ background: `linear-gradient(135deg, ${COLORS.teal}, ${COLORS.cyan})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AI</span>{' '}converge
-        </h1>
-
-        <p className="text-[15px] md:text-lg font-light leading-relaxed max-w-[560px] mx-auto mb-12" style={{ color: COLORS.textSecondary }}>
-          From audit floors at BlackRock and Nomura to architecting production AI systems — this is the story of how domain expertise meets engineering depth.
-        </p>
-      </motion.div>
-
-      <motion.div
-        className="absolute bottom-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.5 }}
-        transition={{ delay: 2 }}
-        style={{ animation: 'floatParticle 3s ease-in-out infinite' }}
-      >
-        <div className="w-6 h-10 rounded-xl border-2 flex justify-center pt-2" style={{ borderColor: `${COLORS.textTertiary}40` }}>
-          <div className="w-[3px] h-2 rounded-sm" style={{ background: COLORS.cyan, animation: 'scrollDot 2s ease-in-out infinite' }} />
+        {/* Bottom bar */}
+        <div className="pt-6 flex flex-col md:flex-row justify-between items-center gap-2" style={{ borderTop: `1px solid ${COLORS.textTertiary}10` }}>
+          <div className="text-[11px] font-mono" style={{ color: COLORS.textTertiary }}>
+            Designed with precision. Built with purpose.
+          </div>
+          <div className="text-[10px]" style={{ color: COLORS.textTertiary }}>
+            {contentConfig.personal.visaStatus}
+          </div>
         </div>
-        <div className="text-center text-[10px] mt-2 tracking-[2px] font-mono" style={{ color: COLORS.textTertiary }}>SCROLL</div>
-      </motion.div>
-    </section>
+      </div>
+    </footer>
   );
 }
 
@@ -545,25 +1210,12 @@ export default function CinematicPortfolio() {
       <Divider color={COLORS.purple} />
       <ChapterArsenal />
       <Divider color={COLORS.teal} />
+      <ChapterCreations />
+      <Divider color={COLORS.pink} />
       <ChapterHorizon />
-
-      <footer className="text-center pt-16 pb-10" style={{ borderTop: `1px solid ${COLORS.textTertiary}10` }}>
-        <div className="flex justify-center gap-6 mb-6">
-          {[
-            { label: 'LinkedIn', url: contentConfig.social.linkedin },
-            { label: 'GitHub', url: contentConfig.social.github },
-            { label: 'Medium', url: contentConfig.social.medium },
-            { label: 'Email', url: `mailto:${contentConfig.personal.email}` },
-          ].map(link => (
-            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="font-mono text-[13px] tracking-wider no-underline transition-colors hover:text-accent-cyan" style={{ color: COLORS.textTertiary }}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div className="text-xs font-mono opacity-50" style={{ color: COLORS.textTertiary }}>
-          Designed with precision. Built with purpose.
-        </div>
-      </footer>
+      <Divider color={COLORS.cyan} />
+      <ChapterConnect />
+      <EnhancedFooter />
     </div>
   );
 }
