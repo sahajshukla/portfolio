@@ -499,6 +499,33 @@ export default function AtelierShell({ palette }: { palette: Palette }) {
           <div className="grid md:grid-cols-12 gap-x-10 gap-y-14 items-start">
             <div className="md:col-span-7" style={reveal(1)}>
               <HeroWordmark palette={palette} />
+              {/* Credential signature: CISA sits like a signed mark beneath the wordmark */}
+              <div className="mt-9 flex items-center gap-4 max-w-[460px]">
+                <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${palette.accent}66)` }} />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10.5,
+                    letterSpacing: '0.32em',
+                    textTransform: 'uppercase',
+                    color: palette.accent,
+                    fontWeight: 500,
+                  }}
+                >
+                  CISA
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.28em',
+                    textTransform: 'uppercase',
+                    color: palette.fgFaint,
+                  }}
+                >
+                  Certified by ISACA
+                </span>
+              </div>
             </div>
 
             <div className="md:col-span-5 md:col-start-8 md:pt-12" style={reveal(2)}>
