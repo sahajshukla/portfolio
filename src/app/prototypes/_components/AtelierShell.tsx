@@ -1232,10 +1232,9 @@ export default function AtelierShell({ palette }: { palette: Palette }) {
                   color: palette.fg,
                 })}
               >
-                Let&apos;s build
-                <br /> something{' '}
-                <span style={{ fontWeight: 500, color: palette.accent }}>worth</span>
-                <br /> auditing.
+                Make a thing
+                <br /> that
+                <br /> <span style={{ fontWeight: 500, color: palette.accent }}>ages well</span>.
               </h2>
             </div>
             <div className="md:col-span-5 md:pt-10">
