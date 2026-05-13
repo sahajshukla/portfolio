@@ -1,10 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { contentConfig } from '@/config/contentConfig';
-import type { Palette } from './EditorialShell';
+import type { Palette } from './atelierPalette';
 import {
   BellCurveAmbient,
   CareerCurve,
@@ -49,55 +48,6 @@ const labelStyle = (color: string): React.CSSProperties => ({
 });
 
 /* ── Bits ────────────────────────────────────────────────────────── */
-
-function VariantNav({ current }: { current: string }) {
-  const variants = [
-    { key: 'atelier', label: 'Atelier' },
-    { key: 'ink-bone', label: 'Ink & Bone' },
-    { key: 'bone-espresso', label: 'Bone & Espresso' },
-    { key: 'onyx-champagne', label: 'Onyx & Champagne' },
-  ];
-  return (
-    <div
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 px-1.5 py-1.5 rounded-full backdrop-blur-xl"
-      style={{ background: 'rgba(46,32,20,0.55)', border: '1px solid rgba(255,245,225,0.14)' }}
-    >
-      {variants.map((v) => {
-        const active = v.key === current;
-        return (
-          <Link
-            key={v.key}
-            href={`/prototypes/${v.key}`}
-            className="px-4 py-2 rounded-full no-underline transition-colors"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              color: active ? '#2E2014' : 'rgba(239,228,204,0.78)',
-              background: active ? '#EFE4CC' : 'transparent',
-            }}
-          >
-            {v.label}
-          </Link>
-        );
-      })}
-      <Link
-        href="/prototypes"
-        className="px-3 py-2 rounded-full no-underline"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          color: 'rgba(239,228,204,0.55)',
-        }}
-      >
-        Index
-      </Link>
-    </div>
-  );
-}
 
 function Hairline({ palette, color }: { palette: Palette; color?: string }) {
   const { ref, visible } = useInView<HTMLDivElement>(0.15);
@@ -509,12 +459,12 @@ export default function AtelierShell({ palette }: { palette: Palette }) {
 
       {/* TOP BAR ─────────────────────────────── */}
       <header className="relative z-10 px-8 lg:px-16 pt-8 flex items-center justify-between">
-        <Link href="/prototypes/atelier" className="no-underline" style={{ color: palette.fg }}>
+        <a href="#" className="no-underline" style={{ color: palette.fg }}>
           <span style={bric({ fontSize: 19, fontWeight: 400, letterSpacing: '-0.018em' })}>
             Sahaj{' '}
             <span style={{ color: palette.accent, fontWeight: 500 }}>Shukla</span>
           </span>
-        </Link>
+        </a>
         <nav className="hidden md:flex gap-9">
           {[
             { label: 'Work', href: '#vantage' },
@@ -1472,6 +1422,9 @@ export default function AtelierShell({ palette }: { palette: Palette }) {
                     Résumé <span style={{ color: palette.fgFaint, fontSize: 11 }}>PDF</span>
                   </a>
                 </li>
+                <li style={newsText({ fontSize: 14, color: palette.fg, fontWeight: 400 })}>
+                  CISA <span style={{ color: palette.fgFaint, fontSize: 11 }}>ISACA</span>
+                </li>
                 <li>
                   <a
                     href="/certifications/databricks-fundamentals.pdf"
@@ -1543,7 +1496,6 @@ export default function AtelierShell({ palette }: { palette: Palette }) {
         </div>
       </footer>
 
-      <VariantNav current="atelier" />
     </div>
   );
 }

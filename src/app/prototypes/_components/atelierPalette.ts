@@ -1,9 +1,28 @@
-import type { Palette } from './EditorialShell';
+/**
+ * Atelier palette and Palette type.
+ * Single source of truth for the home page colors and surface tones.
+ */
+
+export type Palette = {
+  key: 'atelier';
+  displayName: string;
+  bg: string;
+  fg: string;
+  fgMuted: string;
+  fgFaint: string;
+  accent: string;
+  /** Optional soothing secondary accent (moss). Used sparingly. */
+  secondary?: string;
+  /** Optional warm tint for surface cards / quote blocks. */
+  warmTint?: string;
+  hairline: string;
+  cardBg: string;
+  logoFilter: string;
+  vignette: string;
+};
 
 /**
  * The shipped Atelier palette: deep walnut, ivory cream, whiskey brass, moss.
- * Imported by both `/` (homepage) and `/prototypes/atelier` so we have a single
- * source of truth.
  */
 export const atelierPalette: Palette = {
   key: 'atelier',
