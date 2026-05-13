@@ -1,6 +1,39 @@
 import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque, Spectral, JetBrains_Mono, Newsreader } from 'next/font/google';
 import './globals.css';
+import './prototypes/prototypes.css';
 import contentConfig from '@/config/contentConfig';
+
+const bricolage = Bricolage_Grotesque({
+  weight: ['200', '300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+  variable: '--font-bricolage',
+  display: 'swap',
+});
+
+const spectral = Spectral({
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-spectral',
+  display: 'swap',
+});
+
+// Aliased so older Atelier components that referenced --font-news keep working
+const newsreader = Newsreader({
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-news',
+  display: 'swap',
+});
+
+const mono = JetBrains_Mono({
+  weight: ['400', '500'],
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: `${contentConfig.personal.name} - Portfolio`,
@@ -51,7 +84,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html
+      lang="en"
+      className={`scroll-smooth ${bricolage.variable} ${spectral.variable} ${newsreader.variable} ${mono.variable}`}
+    >
       <body className="antialiased">
         {children}
       </body>

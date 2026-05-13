@@ -119,7 +119,7 @@ export const contentConfig: ContentConfig = {
   },
 
   social: {
-    linkedin: "https://www.linkedin.com/in/sahaj-shukla/",
+    linkedin: "https://www.linkedin.com/in/sahajshukla/",
     github: "https://github.com/sahajshukla",
     medium: "https://medium.com/@sahajshukla",
     kaggle: "https://www.kaggle.com/sahajshukla",

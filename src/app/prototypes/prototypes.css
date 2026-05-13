@@ -1,0 +1,64 @@
+/* Prototype-only styles. Kept scoped so they don't leak into main portfolio. */
+
+.prototype-shell {
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.prototype-shell .serif {
+  font-family: var(--font-serif), 'Times New Roman', serif;
+  font-feature-settings: 'liga' 1, 'kern' 1;
+}
+
+.prototype-shell .mono {
+  font-family: var(--font-mono), 'SF Mono', monospace;
+  font-feature-settings: 'tnum' 1;
+}
+
+.prototype-shell .caps {
+  font-family: var(--font-mono), 'SF Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.prototype-shell .hairline {
+  height: 1px;
+  width: 100%;
+}
+
+@keyframes proto-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes proto-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.proto-reveal {
+  animation: proto-reveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.proto-draw {
+  transform-origin: left center;
+  animation: proto-draw 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Slow rotation for the Penrose mark */
+@keyframes proto-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.proto-rotate-slow {
+  animation: proto-rotate 120s linear infinite;
+}
